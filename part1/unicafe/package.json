@@ -1,5 +1,5 @@
 {
-  "name": "part1",
+  "name": "unicafe",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -17,11 +17,7 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app",
-    "env": {
-      "browser": true,
-      "node": true
-    }
+    "extends": "react-app"
   },
   "browserslist": {
     "production": [
@@ -34,8 +30,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "eslint-config-airbnb": "^18.2.0"
   }
 }
