@@ -1,15 +1,15 @@
 import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
-// import './index.css';
-      // <p>all {total}</p>
-      // <p>average {average}</p>
-      // <p>positive {positive}%</p>
 
 const Statistics = ({stats}) => {
   const {good, neutral, bad } = stats
   const total = good + neutral + bad
   const average = (good - bad) / total
   const positive = (good / total) * 100
+
+  if (total === 0) {
+    return <p>No feedback given</p>
+  }
 
   return (
     <div>
