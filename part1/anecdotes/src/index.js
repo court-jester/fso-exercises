@@ -5,16 +5,36 @@ import ReactDOM from 'react-dom';
 const App = (props) => {
   const [selected, setSelected] = useState(0)
 
+  // Array's length as quotes and filled with zeros
+  const arr = new Array(anecdotes.length).fill(0)
+
+  /** Another option to create a zeros' filled array created from length
+  const arr = new Uint8Array(anecdotes.length) */
+
+  const [points, setPoints] = useState(arr)
+
   const getRandomQuote = () => {
+    // Random between zero and total quotes
     const randomNumber = Math.floor(Math.random() * anecdotes.length)
     setSelected(randomNumber)
   }
 
+  const handleVote = () => {
+    const copy = [...points]
+    copy[selected]++
+    setPoints(copy)
+  }
+
+
   return (
     <div>
       <p>{props.anecdotes[selected]}</p>
+      <p>has {points[selected]} votes</p>
+      <button onClick={handleVote}>
+        vote
+      </button>
       <button onClick={getRandomQuote}>
-        Random quote
+        random quote
       </button>
     </div>
 
