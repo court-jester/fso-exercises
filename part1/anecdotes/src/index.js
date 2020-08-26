@@ -12,6 +12,8 @@ const App = (props) => {
   const arr = new Uint8Array(anecdotes.length) */
 
   const [points, setPoints] = useState(arr)
+  const maxPoints = Math.max(...points)
+  const bestQuoteIndex = [...points].indexOf(maxPoints)
 
   const getRandomQuote = () => {
     // Random between zero and total quotes
@@ -28,6 +30,7 @@ const App = (props) => {
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{props.anecdotes[selected]}</p>
       <p>has {points[selected]} votes</p>
       <button onClick={handleVote}>
@@ -36,6 +39,9 @@ const App = (props) => {
       <button onClick={getRandomQuote}>
         random quote
       </button>
+      <h1>Anecdote with most votes</h1>
+      <p>{props.anecdotes[bestQuoteIndex]}</p>
+      <p>has {maxPoints} votes</p>
     </div>
 
   )
