@@ -35,8 +35,12 @@ const Part = ({ part }) => {
 }
 
 const Total = ({ parts }) => {
+  const total = parts.reduce((s, p) => {
+    return (s + p.exercises)
+  }, 0)
+
   return (
-    <p><b>total of {parts[0].exercises + parts[1].exercises + parts[2].exercises + parts[3].exercises} exercises</b></p>
+    <p><b>total of {total} exercises</b></p>
   )
 }
 
