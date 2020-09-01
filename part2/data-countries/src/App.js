@@ -9,6 +9,7 @@ const App = () => {
   const [ finder, setFinder ] = useState('')
   const [ country, setCountry ] = useState([])
 
+  // Get countries information
   useEffect(() => {
     axios
       .get('https://restcountries.eu/rest/v2/all')
@@ -16,6 +17,7 @@ const App = () => {
         setCountries(response.data)
       })
   }, [])
+
 
   const handleFinder = (event) => {
     setFinder(event.target.value)
