@@ -1,41 +1,29 @@
 import React from 'react'
+import CountryDetail from './CountryDetail'
 
-const Countries = ({ countries }) => {
+const Countries = ({ countries, handleShow }) => {
+  
   if (!countries)
     return null
 
   if (countries.length === 1)
-    return (
-      <div>
-        <h1>{countries[0].name}</h1>
-        <div>capital {countries[0].capital}</div>
-        <div>population {countries[0].population}</div>
-        
-        <h2>languages</h2>
-          <ul>
-            {countries[0].languages.map(language =>
-              <li key={language.name}>{language.name}</li>
-            )}
-          </ul>
-        <img
-          src={countries[0].flag} 
-          alt={`${countries[0].name}'s flag`} 
-          height='150'
-          width='150'
-        />
-      </div>
-    )
+    return <CountryDetail country={countries[0]} />
 
   if (countries.length > 10)
     return <div>Too many matches, specify another filter</div>
 
-
   return (
-    countries.map(country =>
-      <div key={country.name}>{country.name}</div>
-    )
+    countries.map(country => {
+      return (
+        <div key={country.name}>
+          {country.name} 
+          <button onClick={() => handleShow(country)}>
+            show
+          </button>
+        </div>
+      )
+    })
   )
 }
-
 export default Countries
 
