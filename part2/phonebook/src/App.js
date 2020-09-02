@@ -33,8 +33,11 @@ function App() {
     if (personExists) {
       alert(`${newName} is already added to the phonebook`)
     } else {
+      // Change id initialization, because of potential key/id conflict after deletions and additions at rendering Person component
+      const personsId = persons.map(person => person.id)
+      const max = Math.max(...personsId)
       const personObject = {
-        id: persons.length + 1,
+        id: max + 1,
         name: newName,
         number: newNumber
       }
@@ -46,6 +49,18 @@ function App() {
           setNewName('')
           setNewNumber('')
         })
+    }
+  }
+
+    // NB: the person object could be passed as parameter through Person's props instead of just the id
+  const removePerson = id => {
+    const person = persons.find(person => person.id === id)
+    if (window.confirm(`Delete ${person.name}?`)) {
+        personService
+          .remove(id)
+          .then(() => { // axios.delete does not return any data
+            setPersons(persons.filter(person => person.id !== id))
+          })
     }
   }
 
@@ -68,7 +83,7 @@ function App() {
 
       <h3>Numbers</h3>
 
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} removePerson={removePerson}/>
     </div>
   )
 }
