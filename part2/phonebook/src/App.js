@@ -28,10 +28,20 @@ function App() {
 
   const addPerson = (event) => {
     event.preventDefault()
-    const personExists = persons.some(person => person.name === newName)
+    const person = persons.find(person => person.name === newName)
 
-    if (personExists) {
-      alert(`${newName} is already added to the phonebook`)
+    if (person) {
+      if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
+        const changedPerson = {...person, number: newNumber}
+        const {id} = person
+        personService
+          .update(id, changedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => 
+              person.id !== id ? person : returnedPerson))
+          })
+      }
+      return
     } else {
       // Change id initialization, because of potential key/id conflict after deletions and additions at rendering Person component
       const personsId = persons.map(person => person.id)
