@@ -62,6 +62,13 @@ app.post('/api/persons', (req, res) => {
     })
   }
 
+  const nameExists = persons.some(person => person.name === body.name)
+  if (nameExists) {
+    return res.status(400).json({
+      error: 'name must be unique'
+    })
+  }
+
   const newPerson = {
     id: Math.floor(Math.random() * 10000000),
     name: body.name,
