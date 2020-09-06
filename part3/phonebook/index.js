@@ -2,8 +2,15 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 
+// Logs HTTP POST request data
+morgan.token('post', (req) => {
+  if (req.body.name && req.body.number)
+    return JSON.stringify(req.body)
+  return null
+})
+
 app.use(express.json())
-app.use(morgan('tiny'))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post'))
 
 let persons = [
   {
