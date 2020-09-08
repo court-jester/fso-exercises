@@ -1,0 +1,17 @@
+title New note SPA
+
+note over browser:
+browser creates a note from input
+value and browser date when form
+is submitted, pushes it to the notes
+array and redraws all the notes.
+Finally, sends the new note to the server
+in the next request
+end note
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+note over server:
+server creates a new note object
+from request payload and adds it
+to the array of notes (?)
+end note
+server-->browser: JSON-code: {"message":"note created"}
