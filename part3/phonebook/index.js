@@ -1,5 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 const app = express()
 
 // Logs HTTP POST request data
@@ -9,6 +10,7 @@ morgan.token('post', (req) => {
   return null
 })
 
+app.use(cors())
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post'))
 
