@@ -62,11 +62,13 @@ function App() {
       }
       return
     } else {
-      // Change id initialization, because of potential key/id conflict after deletions and additions at rendering Person component
-      const personsId = persons.map(person => person.id)
-      const max = Math.max(...personsId)
+      /** Person's ID is now created on the server
+        // Change id initialization, because of potential key/id conflict after deletions and additions at rendering Person component
+        const personsId = persons.map(person => person.id)
+        const max = Math.max(...personsId)
+      */
       const personObject = {
-        id: max + 1,
+        // id: max + 1,
         name: newName,
         number: newNumber
       }
