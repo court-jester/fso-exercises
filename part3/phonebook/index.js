@@ -65,7 +65,7 @@ app.get('/api/persons/:id', (req, res) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndDelete(req.params.id)
-    .then(result => {
+    .then(() => {
       res.status(204).end();
     })
     .catch(e => next(e));
@@ -94,6 +94,24 @@ app.post('/api/persons', (req, res) => {
   person.save().then(savedPerson => {
     res.json(savedPerson);
   });
+});
+
+app.put('/api/persons/:id', (req, res, next) => {
+  const body = req.body;
+  if (body.number === undefined) {
+    return res.status(400).json({ error: 'content missing' });
+  }
+
+  const person = {
+    number: body.number
+  };
+
+  // Response with the modified person
+  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    .then(updatedPerson => {
+      res.json(updatedPerson);
+    })
+    .catch(e => next(e));
 });
 
 const unknownEndpoint = (req, res) => {

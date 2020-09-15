@@ -35,10 +35,12 @@ function App() {
 
     if (person) {
       if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
-        const changedPerson = {...person, number: newNumber}
+        // const changedPerson = {...person, number: newNumber}
+        // Maybe refactor personService.update to pass a simple variable instead of an object
+        const changedNumber = {number: newNumber}
         const {id} = person
         personService
-          .update(id, changedPerson)
+          .update(id, changedNumber)
           .then(returnedPerson => {
             setPersons(persons.map(person => 
               person.id !== id ? person : returnedPerson))
@@ -49,7 +51,7 @@ function App() {
           })
           .catch(error => {
             console.log(error)
-            setError(`Information of ${changedPerson.name} has already been removed from the server`)
+            setError(`Information of ${person.name} has already been removed from the server`)
             setPersons(persons.filter(person => person.id !== id))
             setTimeout(() => {
               setError(null)
