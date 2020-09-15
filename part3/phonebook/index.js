@@ -53,45 +53,34 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(e => next(e));
 });
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body;
-
-  if (!body.name || !body.number) {
-    return res.status(400).json({
-      error: 'content missing'
-    });
-  }
-
-  /** Probably change it for not allowing two persons with the same name
-  const nameExists = persons.some(person => person.name === body.name);
-  if (nameExists) {
-    return res.status(400).json({
-      error: 'name must be unique'
-    });
-  }
-  */
-
   const person = new Person({
     name: body.name,
     number: body.number
   });
-  person.save().then(savedPerson => {
-    res.json(savedPerson);
-  });
+
+  person
+    .save()
+    .then(savedPerson => {
+      res.json(savedPerson);
+    })
+    .catch(e => next(e));
 });
 
 app.put('/api/persons/:id', (req, res, next) => {
   const body = req.body;
-  if (body.number === undefined) {
-    return res.status(400).json({ error: 'content missing' });
-  }
-
   const person = {
     number: body.number
   };
 
   // Response with the modified person
-  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+  // Run validators using this function (by default it doesn't)
+  Person.findByIdAndUpdate(req.params.id, person, {
+    new: true,
+    runValidators: true,
+    context: true
+  })
     .then(updatedPerson => {
       res.json(updatedPerson);
     })
@@ -108,6 +97,8 @@ const errorHandler = (e, req, res, next) => {
 
   if (e.name === 'CastError') {
     return res.status(400).send({ error: 'malformatted id' });
+  } else if (e.name === 'ValidationError') {
+    return res.status(400).json({ error: e.message });
   }
   next(e);
 };
