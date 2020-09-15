@@ -18,49 +18,31 @@ app.use(
   morgan(':method :url :status :res[content-length] - :response-time ms :post')
 );
 
-let persons = [
-  {
-    name: 'Arto Hellas',
-    number: '040-123456',
-    id: 1
-  },
-  {
-    name: 'Ada Lovelace',
-    number: '39-44-5323523',
-    id: 2
-  },
-  {
-    name: 'Dan Abramov',
-    number: '12-43-234345',
-    id: 3
-  },
-  {
-    name: 'Mary Poppendieck',
-    number: '39-23-6423122',
-    id: 4
-  }
-];
-
 app.get('/api/persons', (req, res) => {
   Person.find({}).then(persons => {
     res.json(persons);
   });
 });
 
-app.get('/info', (req, res) => {
-  res.send(`Phonebook has info for ${persons.length} people
-  \n${new Date()}`);
+app.get('/info', (req, res, next) => {
+  Person.estimatedDocumentCount()
+    .then(result => {
+      res.send(`Phonebook has info for ${result} people
+      \n${new Date()}`);
+    })
+    .catch(e => next(e));
 });
 
-app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const person = persons.find(person => person.id === id);
-
-  if (person) {
-    res.json(person);
-  } else {
-    res.status(404).end();
-  }
+app.get('/api/persons/:id', (req, res, next) => {
+  Person.findById(req.params.id)
+    .then(person => {
+      if (person) {
+        res.json(person);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch(e => next(e));
 });
 
 app.delete('/api/persons/:id', (req, res, next) => {
@@ -80,12 +62,14 @@ app.post('/api/persons', (req, res) => {
     });
   }
 
+  /** Probably change it for not allowing two persons with the same name
   const nameExists = persons.some(person => person.name === body.name);
   if (nameExists) {
     return res.status(400).json({
       error: 'name must be unique'
     });
   }
+  */
 
   const person = new Person({
     name: body.name,
