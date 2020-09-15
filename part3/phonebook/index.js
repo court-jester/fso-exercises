@@ -1,10 +1,19 @@
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const Person = require('./models/person');
 const app = express();
 
+const logger = (req, res, next) => {
+  console.log('Method:', req.method);
+  console.log('Path:  ', req.path);
+  console.log('Body:  ', req.body);
+  console.log('---');
+  next();
+};
 // Logs HTTP POST request data
 morgan.token('post', req => {
   if (req.body.name && req.body.number) return JSON.stringify(req.body);
@@ -17,6 +26,7 @@ app.use(express.static('build'));
 app.use(
   morgan(':method :url :status :res[content-length] - :response-time ms :post')
 );
+app.use(logger);
 
 app.get('/api/persons', (req, res) => {
   Person.find({}).then(persons => {
