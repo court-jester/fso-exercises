@@ -50,12 +50,20 @@ function App() {
             }, 5000)
           })
           .catch(error => {
-            console.log(error)
-            setError(`Information of ${person.name} has already been removed from the server`)
-            setPersons(persons.filter(person => person.id !== id))
-            setTimeout(() => {
-              setError(null)
-            }, 5000)
+            if(error.response.data.error) {
+              console.error(error.response.data)
+              setError(error.response.data.error)
+              setTimeout(() => {
+                setError(null)
+              }, 5000)
+            } else {
+              console.log(error)
+              setError(`Information of ${person.name} has already been removed from the server`)
+              setPersons(persons.filter(person => person.id !== id))
+              setTimeout(() => {
+                setError(null)
+              }, 5000)
+            }
           })
           .finally(() => {
             setNewName('')
@@ -83,7 +91,15 @@ function App() {
           setTimeout(() => {
             setNotification(null)
           }, 5000)
-
+        })
+        .catch(error => {
+          console.error(error.response.data)
+          setError(error.response.data.error)
+          setTimeout(() => {
+            setError(null)
+          }, 5000)
+        })
+        .finally(() => {
           setNewName('')
           setNewNumber('')
         })
