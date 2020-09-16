@@ -10,7 +10,8 @@
     "build:ui": "rm -rf build && cd ../../part2/phonebook && yarn run build --prod && cp -r build ../../part3/phonebook",
     "deploy": "cd ../../ && git subtree push --prefix part3 heroku master",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && npm run deploy",
-    "logs:prod": "heroku logs --tail"
+    "logs:prod": "heroku logs --tail",
+    "lint": "eslint ."
   },
   "author": "",
   "license": "ISC",

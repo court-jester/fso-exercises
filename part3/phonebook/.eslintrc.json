@@ -5,6 +5,9 @@
   },
   "extends": ["eslint:recommended", "plugin:prettier/recommended"],
   "rules": {
-    "prettier/prettier": ["error"]
+    "prettier/prettier": ["error"],
+    "eqeqeq": "error",
+    "no-trailing-spaces": "error",
+    "no-console": "off"
   }
 }
