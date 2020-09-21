@@ -1,0 +1,13 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+  "rules": {
+    "prettier/prettier": ["error"],
+    "eqeqeq": "error",
+    "no-trailing-spaces": "error",
+    "no-console": "off"
+  }
+}
