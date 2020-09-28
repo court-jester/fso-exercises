@@ -17,17 +17,46 @@ const favoriteBlog = blogs => {
   const reducer = (mostLiked, item) => {
     return mostLiked.likes > item.likes ? mostLiked : item;
   };
-  const mostLikedBlog = blogs.reduce(reducer, 0);
-  // Format the mostLikedBlog
-  delete mostLikedBlog.url;
-  delete mostLikedBlog._id;
-  delete mostLikedBlog.__v;
+  // Format the blogs to not show their _id, __v and url
+  const mostLikedBlog = blogs
+    .map(({ title, author, likes }) => ({ title, author, likes }))
+    .reduce(reducer, 0);
 
   return blogs.length === 0 ? [] : mostLikedBlog;
+};
+
+const mostBlogs = blogs => {
+  if (blogs.length === 0) {
+    return [];
+  }
+
+  const reducer = (acc, cur) => {
+    acc[cur.author] ? acc[cur.author]++ : (acc[cur.author] = 1);
+    return acc;
+  };
+
+  const reducer2 = (mostProlificAuthor, cur) => {
+    return (mostProlificAuthor[1] || -Infinity) >= cur[1]
+      ? mostProlificAuthor
+      : cur;
+    // return Math.max(cur[1], mostProlificAuthor[1]);
+  };
+
+  const authors = blogs.reduce(reducer, {});
+
+  const arrAuthors = Object.entries(authors);
+  const mostProlificAuthor = arrAuthors.reduce(reducer2, {});
+
+  const formatProlificAuthor = {
+    author: mostProlificAuthor[0],
+    blogs: mostProlificAuthor[1]
+  };
+  return formatProlificAuthor;
 };
 
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs
 };
