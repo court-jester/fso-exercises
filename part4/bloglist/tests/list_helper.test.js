@@ -2,6 +2,7 @@ const dummy = require('../utils/list_helper').dummy;
 const totalLikes = require('../utils/list_helper').totalLikes;
 const favoriteBlog = require('../utils/list_helper').favoriteBlog;
 const mostBlogs = require('../utils/list_helper').mostBlogs;
+const mostLikes = require('../utils/list_helper').mostLikes;
 
 const listWithOneBlog = [
   {
@@ -112,7 +113,7 @@ describe('favorite blog', () => {
   });
 });
 
-describe('largest amount of blogs ', () => {
+describe('author with the largest amount of blogs ', () => {
   test('of empty list is an empty array', () => {
     expect(mostBlogs([])).toEqual([]);
   });
@@ -133,5 +134,29 @@ describe('largest amount of blogs ', () => {
     // Can check bloglist in other order as well
     // const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
     expect(mostBlogs(blogs)).toEqual(mostProlificAuthor);
+  });
+});
+
+describe('author with the most likes', () => {
+  test('of empty list is an empty array', () => {
+    expect(mostLikes([])).toEqual([]);
+  });
+
+  test('when list has only one shows it', () => {
+    const mostLikedAuthor = {
+      author: 'Edsger W. Dijkstra',
+      likes: 5
+    };
+    expect(mostLikes(listWithOneBlog)).toEqual(mostLikedAuthor);
+  });
+
+  test('of a bigger list is calculated right', () => {
+    const mostLikedAuthor = {
+      author: 'Edsger W. Dijkstra',
+      likes: 17
+    };
+    // Can check bloglist in other order as well
+    // const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
+    expect(mostLikes(blogs)).toEqual(mostLikedAuthor);
   });
 });

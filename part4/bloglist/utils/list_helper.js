@@ -54,9 +54,36 @@ const mostBlogs = blogs => {
   return formatProlificAuthor;
 };
 
+const mostLikes = blogs => {
+  if (blogs.length === 0) {
+    return [];
+  }
+
+  const reducer = (acc, cur) => {
+    acc[cur.author]
+      ? (acc[cur.author] += cur.likes)
+      : (acc[cur.author] = cur.likes);
+    return acc;
+  };
+  const reducer2 = (acc, cur) => {
+    return (acc[1] || -Infinity) >= cur[1] ? acc : cur;
+  };
+
+  const authorsLikes = blogs.reduce(reducer, {});
+  const arrAuthorsLikes = Object.entries(authorsLikes);
+  const mostLikedAuthor = arrAuthorsLikes.reduce(reducer2, {});
+
+  const formatMostLikedAuthor = {
+    author: mostLikedAuthor[0],
+    likes: mostLikedAuthor[1]
+  };
+  return formatMostLikedAuthor;
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 };
