@@ -11,5 +11,6 @@
     "eqeqeq": "error",
     "no-trailing-spaces": "error",
     "no-console": "off"
-  }
+  },
+  "parserOptions": { "ecmaVersion": 8 }
 }
