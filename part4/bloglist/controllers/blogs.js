@@ -18,7 +18,7 @@ blogsRouter.get('/:id', (req, res, next) => {
     .catch(e => next(e));
 });
 
-blogsRouter.post('/', (req, res, next) => {
+blogsRouter.post('/', async (req, res) => {
   const body = req.body;
   const blog = new Blog({
     title: body.title,
@@ -27,10 +27,8 @@ blogsRouter.post('/', (req, res, next) => {
     likes: body.likes
   });
 
-  blog
-    .save()
-    .then(savedBlog => res.status(201).json(savedBlog))
-    .catch(e => next(e));
+  const savedBlog = await blog.save();
+  res.status(201).json(savedBlog);
 });
 
 blogsRouter.delete('/:id', (req, res, next) => {
