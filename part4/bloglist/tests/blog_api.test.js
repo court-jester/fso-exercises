@@ -28,7 +28,6 @@ test('all blogs are returned', async () => {
     .expect('Content-type', /application\/json/);
 
   expect(response.body).toHaveLength(helper.initialBlogs.length);
-  // expect(response.type).toBe('application/json');
 });
 
 test('a specific blog is within the returned blogs', async () => {
@@ -87,6 +86,18 @@ test('an invalid blog can not be added', async () => {
   expect(response.body.error).toBe(
     'Blog validation failed: title: Path `title` is required.'
   );
+});
+
+test('if the likes property is missing, default its value to 0', async () => {
+  const newBlog = {
+    title: 'The greatest test',
+    author: 'Mokelele Embe',
+    url: 'https://www.utepapaute.com'
+  };
+
+  const response = await api.post('/api/blogs').send(newBlog).expect(201);
+
+  expect(response.body.likes).toBe(0);
 });
 
 afterAll(() => {
