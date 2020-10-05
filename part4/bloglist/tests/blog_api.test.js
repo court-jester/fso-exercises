@@ -103,7 +103,7 @@ describe('addition of a new blogpost', () => {
     expect(response.body.likes).toBe(0);
   });
 
-  test('fails with status code 400 if title and/or url are missing', async () => {
+  test('fails with status code 400 if title and url are missing', async () => {
     const newBlog = {
       author: 'Mokelele Embe',
       likes: 1
@@ -137,6 +137,59 @@ describe('deletion of a blog', () => {
     const invalidId = '123';
 
     const response = await api.delete(`/api/blogs/${invalidId}`).expect(400);
+
+    expect(response.body.error).toBe('malformatted id');
+  });
+});
+
+describe('modification of a blog', () => {
+  test('succeeds with valid data', async () => {
+    const blogs = await helper.blogsInDb();
+    const blogToUpdate = blogs[0];
+
+    const modifyLikes = {
+      title: blogToUpdate.title,
+      author: blogToUpdate.author,
+      url: blogToUpdate.url,
+      likes: 50
+    };
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(modifyLikes)
+      .expect(200)
+      .expect('Content-type', /application\/json/);
+
+    // const blogUpdated = { ...blogToUpdate, likes: 50 };
+
+    const blogsAfterPut = await helper.blogsInDb();
+    const updatedBlog = blogsAfterPut[0];
+    expect(response.body).toEqual(updatedBlog);
+  });
+
+  test('fails with status code 400 if data is invalid', async () => {
+    const blogs = await helper.blogsInDb();
+    const blogToUpdate = blogs[0];
+
+    const invalidBlogUpdate = {
+      author: blogToUpdate.author,
+      likes: 50
+    };
+
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(invalidBlogUpdate)
+      .expect(400)
+      .expect('Content-type', /application\/json/);
+
+    expect(response.body.error).toBe(
+      'Validation failed: url: Path `url` is required., title: Path `title` is required.'
+    );
+  });
+
+  test('fails with status code 400 if ID is invalid', async () => {
+    const invalidId = '123';
+
+    const response = await api.put(`/api/blogs/${invalidId}`).expect(400);
 
     expect(response.body.error).toBe('malformatted id');
   });
