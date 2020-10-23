@@ -28,8 +28,20 @@ const errorHandler = (e, req, res, next) => {
   next(e);
 };
 
+// Isolates the token from the authorization header of the request (it uses the Bearer authentication scheme)
+const tokenExtractor = (req, res, next) => {
+  const authorization = req.get('authorization');
+
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    req.token = authorization.substring(7);
+  }
+
+  next();
+};
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  tokenExtractor
 };
