@@ -4,12 +4,21 @@ const helper = require('./test_helper');
 const app = require('../app');
 const api = supertest(app);
 const Blog = require('../models/blog');
+const User = require('../models/user');
+let token = null;
 
 beforeEach(async () => {
-  await Blog.deleteMany({});
+  await User.deleteMany({});
 
+  // NOTE: Another way of getting a valid token and user could be by using the api route /api/login before each or all tests. To check: pros and cons of different approaches to send authenticated requests
+  const newUser = await helper.addUserInDb('nameofUser');
+  token = helper.createToken(newUser);
+
+  await Blog.deleteMany({});
   // .forEach may cause problems with asynchronous code, better use Promise.all or for..of
   for (let blog of helper.initialBlogs) {
+    // Add the user id to the created blogs
+    blog.user = newUser._id;
     let blogObject = new Blog(blog);
     await blogObject.save();
   }
@@ -64,6 +73,7 @@ describe('addition of a new blogpost', () => {
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `bearer ${token}`)
       .expect(201)
       .expect('Content-type', /application\/json/);
 
@@ -83,6 +93,7 @@ describe('addition of a new blogpost', () => {
     const response = await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `bearer ${token}`)
       .expect(400)
       .expect('Content-type', /application\/json/);
 
@@ -98,7 +109,11 @@ describe('addition of a new blogpost', () => {
       url: 'https://www.utepapaute.com'
     };
 
-    const response = await api.post('/api/blogs').send(newBlog).expect(201);
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `bearer ${token}`)
+      .expect(201);
 
     expect(response.body.likes).toBe(0);
   });
@@ -111,6 +126,7 @@ describe('addition of a new blogpost', () => {
     const response = await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `bearer ${token}`)
       .expect(400)
       .expect('Content-type', /application\/json/);
 
@@ -118,13 +134,52 @@ describe('addition of a new blogpost', () => {
       'Blog validation failed: title: Path `title` is required., url: Path `url` is required.'
     );
   });
+
+  test('fails with status code 401 if the token is missing', async () => {
+    const newBlog = {
+      title: 'The greatest test',
+      author: 'Mokelele Embe',
+      url: 'https://www.utepapaute.com',
+      likes: 1
+    };
+
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+      .expect('Content-type', /application\/json/);
+
+    expect(response.body.error).toBe('invalid token');
+  });
+
+  test('fails with status code 401 if the token is invalid', async () => {
+    const newBlog = {
+      title: 'The greatest test',
+      author: 'Mokelele Embe',
+      url: 'https://www.utepapaute.com',
+      likes: 1
+    };
+
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `bearer invalidtoken33923838949282`)
+      .expect(401)
+      .expect('Content-type', /application\/json/);
+
+    expect(response.body.error).toBe('invalid token');
+  });
 });
+
 describe('deletion of a blog', () => {
   test('succeeds with status code 204 if ID is valid', async () => {
     const blogsBeforeDeletion = await helper.blogsInDb();
     const blogToDelete = blogsBeforeDeletion[0];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `bearer ${token}`)
+      .expect(204);
 
     const blogsAfterDeletion = await helper.blogsInDb();
     expect(blogsAfterDeletion).toHaveLength(helper.initialBlogs.length - 1);
@@ -136,9 +191,22 @@ describe('deletion of a blog', () => {
   test('fails with status code 400 and if ID is invalid', async () => {
     const invalidId = '123';
 
-    const response = await api.delete(`/api/blogs/${invalidId}`).expect(400);
+    const response = await api
+      .delete(`/api/blogs/${invalidId}`)
+      .set('Authorization', `bearer ${token}`)
+      .expect(400);
 
     expect(response.body.error).toBe('malformatted id');
+  });
+
+  test('fails with status code 401 if the token is missing', async () => {
+    const [blogToDelete] = await helper.blogsInDb();
+
+    const response = await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(401);
+
+    expect(response.body.error).toBe('invalid token');
   });
 });
 
@@ -163,7 +231,11 @@ describe('modification of a blog', () => {
 
     const blogsAfterPut = await helper.blogsInDb();
     const updatedBlog = blogsAfterPut[0];
-    expect(response.body).toEqual(updatedBlog);
+
+    // NOTE: Maybe use another matcher instead of creating and using a function to parse the user field of a blog for succeeds the .toEqual matcher
+    const parsedBlog = helper.parseBlogUser(updatedBlog);
+
+    expect(response.body).toEqual(parsedBlog);
   });
 
   test('fails with status code 400 if data is invalid', async () => {
