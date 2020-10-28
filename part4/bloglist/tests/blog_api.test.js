@@ -215,6 +215,7 @@ describe('modification of a blog', () => {
     const blogs = await helper.blogsInDb();
     const blogToUpdate = blogs[0];
 
+    // Probably blogToUpdate.likes++ would work, instead of creating a new filled blog object
     const modifyLikes = {
       title: blogToUpdate.title,
       author: blogToUpdate.author,
