@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Blog from './components/Blog';
+import Notification from './components/Notification';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
@@ -11,6 +12,7 @@ const App = () => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs));
@@ -25,11 +27,19 @@ const App = () => {
     }
   }, []);
 
+  const notifyWith = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 5000);
+  };
+
   const handleLogin = async e => {
     e.preventDefault();
 
     try {
       const user = await loginService.login({ username, password });
+      console.log('user');
 
       window.localStorage.setItem('loggedBlogUser', JSON.stringify(user));
       blogService.setToken(user.token);
@@ -38,7 +48,9 @@ const App = () => {
       setUsername('');
       setPassword('');
     } catch (e) {
-      console.error(e);
+      const errorMessage = e.response.data.error;
+      notifyWith(`Error: ${errorMessage}`, 'error');
+      console.error(e.response);
     }
   };
 
@@ -59,8 +71,13 @@ const App = () => {
     try {
       const blog = await blogService.create(blogObject);
       setBlogs(blogs.concat(blog));
+      notifyWith(
+        `A new blog titled "${blog.title}" by ${blog.author} has been added`
+      );
     } catch (e) {
-      console.error(e);
+      const errorMessage = e.response.data.error;
+      notifyWith(`Error: ${errorMessage}`, 'error');
+      console.error(e.response);
     }
   };
 
@@ -102,6 +119,7 @@ const App = () => {
   if (user === null)
     return (
       <>
+        <Notification notification={notification} />
         <h2>log in to application</h2>
         <form onSubmit={handleLogin}>
           <label>
@@ -127,6 +145,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification notification={notification} />
       <h2>blogs</h2>
       <p>{user.username} logged in</p>
       <button onClick={handleLogout}>logout</button>

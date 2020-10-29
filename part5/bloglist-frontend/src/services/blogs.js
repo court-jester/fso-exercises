@@ -5,8 +5,8 @@ let token = null;
 
 const setToken = newToken => {
   token = `bearer ${newToken}`;
-  console.log('enters setoken', token);
 };
+
 const getAll = async () => {
   const response = await axios.get(baseUrl);
   return response.data;
