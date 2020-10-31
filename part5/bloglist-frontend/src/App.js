@@ -22,6 +22,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
+
       setUser(user);
       blogService.setToken(user.token);
     }
@@ -97,6 +98,20 @@ const App = () => {
     }
   };
 
+  const removeBlog = async id => {
+    const blog = blogs.find(blog => blog.id === id);
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      try {
+        await blogService.remove(id);
+        setBlogs(blogs.filter(blog => blog.id !== id));
+      } catch (e) {
+        const errorMessage = e.response.data.error;
+        notifyWith(`Error: ${errorMessage}`, 'error');
+        console.error(e.response);
+      }
+    }
+  };
+
   const blogForm = () => {
     return (
       <Toggleable buttonLabel="new blog" ref={blogFormRef}>
@@ -143,7 +158,13 @@ const App = () => {
       {blogs
         .sort((a, b) => b.likes - a.likes)
         .map(blog => (
-          <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+          <Blog
+            key={blog.id}
+            blog={blog}
+            updateBlog={updateBlog}
+            removeBlog={removeBlog}
+            userName={user.username}
+          />
         ))}
     </div>
   );
