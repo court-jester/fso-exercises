@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, updateBlog }) => {
   const [blogVisible, setBlogVisible] = useState(false);
 
   const blogStyle = {
@@ -25,7 +25,8 @@ const Blog = ({ blog }) => {
       <ul style={listStyle}>
         <li>{blog.url}</li>
         <li>
-          likes {blog.likes} <button>like</button>
+          likes {`${blog.likes} `}
+          <button onClick={() => updateBlog(blog.id)}>like</button>
         </li>
         <li>{blog.author}</li>
         <button onClick={() => setBlogVisible(false)}>close</button>
@@ -35,6 +36,7 @@ const Blog = ({ blog }) => {
 };
 
 Blog.propTypes = {
-  blog: PropTypes.object
+  blog: PropTypes.object.isRequired,
+  updateBlog: PropTypes.func.isRequired
 };
 export default Blog;

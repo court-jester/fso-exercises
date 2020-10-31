@@ -73,6 +73,30 @@ const App = () => {
     }
   };
 
+  // TO CHECK: Trade offs of passing the blog as parameter, or just the id and find the blog (blogs.find())
+  const updateBlog = async id => {
+    const blog = blogs.find(blog => blog.id === id);
+    // Blog.user seems unnecessary to update it, otherwise just add blog.user.id to the user property of the newBlog
+    delete blog.user;
+    const likes = ++blog.likes;
+
+    const newBlog = {
+      ...blog,
+      likes
+    };
+
+    try {
+      const updatedBlog = await blogService.update(id, newBlog);
+      setBlogs(
+        blogs.map(blog => (blog.id !== updatedBlog.id ? blog : updatedBlog))
+      );
+    } catch (e) {
+      const errorMessage = e.response.data.error;
+      notifyWith(`Error: ${errorMessage}`, 'error');
+      console.error(e.response);
+    }
+  };
+
   const blogForm = () => {
     return (
       <Toggleable buttonLabel="new blog" ref={blogFormRef}>
@@ -116,9 +140,11 @@ const App = () => {
       <button onClick={handleLogout}>logout</button>
       <h2>create new blog</h2>
       {blogForm()}
-      {blogs.map(blog => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+      {blogs
+        .sort((a, b) => b.likes - a.likes)
+        .map(blog => (
+          <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+        ))}
     </div>
   );
 };
