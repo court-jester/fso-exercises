@@ -21,17 +21,16 @@ const Blog = ({ blog, updateBlog, removeBlog, userName }) => {
 
   return (
     <div style={blogStyle}>
-      {blog.title}{' '}
+      {blog.title} {blog.author}{' '}
       <button onClick={() => setBlogVisible(!blogVisible)}>
         {blogVisible ? 'hide' : 'view'}
       </button>
-      <ul style={listStyle}>
+      <ul style={listStyle} className="toggleableContent">
         <li>{blog.url}</li>
         <li>
           likes {`${blog.likes} `}
           <button onClick={() => updateBlog(blog.id)}>like</button>
         </li>
-        <li>{blog.author}</li>
         {blog.user.username === userName && (
           <button onClick={() => removeBlog(blog.id)}>remove</button>
         )}
