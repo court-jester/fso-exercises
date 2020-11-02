@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import Notification from './components/Notification';
 import BlogForm from './components/BlogForm';
+import LoginForm from './components/LoginForm';
 import Toggleable from './components/Toggleable';
 import blogService from './services/blogs';
 import loginService from './services/login';
@@ -120,52 +121,43 @@ const App = () => {
     );
   };
 
-  if (user === null)
+  const loginForm = () => {
     return (
-      <>
-        <Notification notification={notification} />
-        <h2>log in to application</h2>
-        <form onSubmit={handleLogin}>
-          <label>
-            username
-            <input
-              type="text"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              name="Username"
-            />
-          </label>
-          <span>password</span>
-          <input
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            name="Password"
-          />
-          <button type="submit">login</button>
-        </form>
-      </>
+      <LoginForm
+        username={username}
+        password={password}
+        handleUsernameChange={e => setUsername(e.target.value)}
+        handlePasswordChange={e => setPassword(e.target.value)}
+        handleSubmit={handleLogin}
+      />
     );
+  };
 
   return (
     <div>
       <Notification notification={notification} />
-      <h2>blogs</h2>
-      <p>{user.username} logged in</p>
-      <button onClick={handleLogout}>logout</button>
-      <h2>create new blog</h2>
-      {blogForm()}
-      {blogs
-        .sort((a, b) => b.likes - a.likes)
-        .map(blog => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            updateBlog={updateBlog}
-            removeBlog={removeBlog}
-            userName={user.username}
-          />
-        ))}
+      {user === null ? (
+        loginForm()
+      ) : (
+        <div>
+          <h2>blogs</h2>
+          <p>{user.username} logged in</p>
+          <button onClick={handleLogout}>logout</button>
+          <h2>create new blog</h2>
+          {blogForm()}
+          {blogs
+            .sort((a, b) => b.likes - a.likes)
+            .map(blog => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                updateBlog={updateBlog}
+                removeBlog={removeBlog}
+                userName={user.username}
+              />
+            ))}
+        </div>
+      )}
     </div>
   );
 };
