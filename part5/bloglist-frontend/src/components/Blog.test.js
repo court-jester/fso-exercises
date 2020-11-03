@@ -49,6 +49,17 @@ describe('<Blog />', () => {
     expect(div).not.toHaveStyle('display: none');
   });
 
+  test('after displaying more information, hide it again', () => {
+    const button = component.getByText('view');
+    fireEvent.click(button);
+
+    const hideButton = component.getByText('hide');
+    fireEvent.click(hideButton);
+
+    const div = component.container.querySelector('.toggleableContent');
+    expect(div).toHaveStyle('display: none');
+  });
+
   test('calls the update event handler 2 times after clicking the like button 2 times', () => {
     const viewButton = component.getByText('view');
     fireEvent.click(viewButton);
