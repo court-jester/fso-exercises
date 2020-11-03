@@ -8,7 +8,8 @@
     "dev": "NODE_ENV=development nodemon index.js",
     "test": "NODE_ENV=test jest --verbose --runInBand",
     "debug:test": "NODE_ENV=test node --inspect-brk node_modules/.bin/jest --runInBand",
-    "build:ui": "rm -rf build && cd ../../part5/bloglist-frontend && npm run build --prod && cp -r build ../../part4/bloglist"
+    "build:ui": "rm -rf build && cd ../../part5/bloglist-frontend && npm run build --prod && cp -r build ../../part4/bloglist",
+    "start:test": "NODE_ENV=test node index.js"
   },
   "author": "",
   "license": "ISC",
