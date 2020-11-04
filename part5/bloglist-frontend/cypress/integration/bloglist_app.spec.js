@@ -8,14 +8,7 @@ describe('Bloglist app', function () {
       password: 'rightPass'
     };
     cy.request('POST', 'http://localhost:3003/api/users', newUser);
-    // cy.request('POST', 'http://localhost:3003/api/users', {
-    //   username: 'cyUser',
-    //   password: 'rightPass'
-    // }).then(function (response) {
-    //   console.log(response);
-    //   localStorage.setItem('loggedBlogUser', JSON.stringify(response.body));
-    //   cy.visit('http://localhost:3000');
-    // });
+
     cy.visit('http://localhost:3000');
   });
 
@@ -50,6 +43,36 @@ describe('Bloglist app', function () {
         .should('have.css', 'color', 'rgb(255, 0, 0)');
 
       cy.get('html').should('not.contain', 'testname logged in');
+    });
+  });
+
+  describe.only('When logged in', function () {
+    beforeEach(function () {
+      cy.request('POST', 'http://localhost:3003/api/login', {
+        username: 'testname',
+        password: 'rightPass'
+      }).then(function (response) {
+        localStorage.setItem('loggedBlogUser', JSON.stringify(response.body));
+        cy.visit('http://localhost:3000');
+      });
+    });
+
+    it('a new blog can be created', function () {
+      cy.get('#show-create-blog').click();
+
+      cy.get('input#title').type('Testing with Cypress');
+      cy.get('input#author').type('McManaman');
+      cy.get('input#url').type('http://cypress.com/');
+      cy.get('#blog-button').click();
+
+      cy.get('.success')
+        .should(
+          'contain',
+          'A new blog titled "Testing with Cypress" by McManaman has been added'
+        )
+        .should('have.css', 'color', 'rgb(0, 128, 0)');
+
+      cy.contains('Testing with Cypress McManaman');
     });
   });
 });
