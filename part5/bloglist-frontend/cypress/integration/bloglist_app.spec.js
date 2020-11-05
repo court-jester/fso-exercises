@@ -1,7 +1,9 @@
 describe('Bloglist app', function () {
   beforeEach(function () {
+    // Clear all stored data
     cy.request('DELETE', 'http://localhost:3003/api/testing/reset');
 
+    // A custom command could be used to create an user
     const newUser = {
       name: 'Bob Alicon',
       username: 'testname',
@@ -53,7 +55,7 @@ describe('Bloglist app', function () {
     });
   });
 
-  describe.only('When logged in', function () {
+  describe('When logged in', function () {
     beforeEach(function () {
       cy.request('POST', 'http://localhost:3003/api/login', {
         username: 'testname',
@@ -64,7 +66,7 @@ describe('Bloglist app', function () {
       });
     });
 
-    it.skip('a new blog can be created', function () {
+    it('a new blog can be created', function () {
       cy.get('div > button').contains('new blog').click();
 
       cy.get('input#title').type('Testing with Cypress');
@@ -101,7 +103,7 @@ describe('Bloglist app', function () {
         });
       });
 
-      it.skip('a specific blog can be liked', function () {
+      it('a specific blog can be liked', function () {
         // By its title
         cy.contains('Second blog')
           .contains('view')
@@ -115,7 +117,7 @@ describe('Bloglist app', function () {
         cy.contains('Second blog').should('contain', 1);
       });
 
-      it.skip('a specific blog can be deleted by the owner', function () {
+      it('a specific blog can be deleted by the owner', function () {
         // By its title
         cy.contains('Second blog')
           .contains('view')
@@ -139,6 +141,57 @@ describe('Bloglist app', function () {
           .parent()
           .find('button')
           .should('not.contain', 'remove');
+      });
+
+      it('blogs are descending ordered according to likes', function () {
+        // Give two likes to the blog titled "Second blog"
+        cy.get('#blogs')
+          .contains('Second blog')
+          .contains('view')
+          .click()
+          .parent()
+          .find('button')
+          .contains('like')
+          .click()
+          .click();
+
+        // Give 4 likes to the blog titled "Third blog"
+        cy.get('#blogs')
+          .contains('Third blog')
+          .contains('view')
+          .click()
+          .parent()
+          .find('button')
+          .contains('like')
+          .click()
+          .click()
+          .click()
+          .click();
+
+        cy.contains('Second blog').should('contain', 2);
+        cy.contains('Third blog').should('contain', 4);
+
+        // It is unnecessary to hide them, but it will simulate as if they weren't modified recently
+        cy.contains('Second blog').contains('hide').click();
+        cy.contains('Third blog').contains('hide').click();
+        // cy.get('#blogs').contains('First blog').contains('view').click();
+
+        // Get all the blogs
+        cy.get('#blogs')
+          .children()
+          .then($blogs => {
+            // Need to copy the array, because sort changes and returns the sorted array, not a copy
+            const actual = $blogs.slice();
+            // Descending sort by number of likes
+            const sortedBlogs = actual.sort((a, b) => {
+              return (
+                // Get only the number of likes from each blog
+                Number(b.innerText.replace(/[^\d]/g, '')) -
+                Number(a.innerText.replace(/[^\d]/g, ''))
+              );
+            });
+            cy.wrap($blogs).should('deep.eq', sortedBlogs);
+          });
       });
     });
   });
