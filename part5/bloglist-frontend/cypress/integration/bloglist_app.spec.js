@@ -57,8 +57,8 @@ describe('Bloglist app', function () {
       });
     });
 
-    it('a new blog can be created', function () {
-      cy.get('#show-create-blog').click();
+    it.skip('a new blog can be created', function () {
+      cy.get('div > button').contains('new blog').click();
 
       cy.get('input#title').type('Testing with Cypress');
       cy.get('input#author').type('McManaman');
@@ -73,6 +73,36 @@ describe('Bloglist app', function () {
         .should('have.css', 'color', 'rgb(0, 128, 0)');
 
       cy.contains('Testing with Cypress McManaman');
+    });
+
+    describe('and when blogs already exist', function () {
+      beforeEach(function () {
+        cy.createBlog({
+          title: 'First blog',
+          author: 'First author',
+          url: 'https://firsturl.com'
+        });
+        cy.createBlog({
+          title: 'Second blog',
+          author: 'Second author',
+          url: 'https://secondurl.com'
+        });
+        cy.createBlog({
+          title: 'Third blog',
+          author: 'Third author',
+          url: 'https://thirdurl.com'
+        });
+      });
+
+      it('a specific blog can be liked', function () {
+        // By its title
+        cy.contains('Second blog')
+          .contains('view')
+          .click()
+          .parent()
+          .contains('like')
+          .click();
+      });
     });
   });
 });
