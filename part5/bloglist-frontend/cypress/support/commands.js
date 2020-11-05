@@ -44,7 +44,7 @@ Cypress.Commands.add('login', ({ username, password }) => {
     username,
     password
   }).then(({ body }) => {
-    localStorage.setItem('loggedNoteappUser', JSON.stringify(body));
+    localStorage.setItem('loggedBlogUser', JSON.stringify(body));
     cy.visit('http://localhost:3000');
   });
 });

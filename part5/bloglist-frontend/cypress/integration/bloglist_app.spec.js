@@ -9,6 +9,13 @@ describe('Bloglist app', function () {
     };
     cy.request('POST', 'http://localhost:3003/api/users', newUser);
 
+    const secondUser = {
+      name: 'the non creator',
+      username: 'noCreator',
+      password: 'passw'
+    };
+    cy.request('POST', 'http://localhost:3003/api/users', secondUser);
+
     cy.visit('http://localhost:3000');
   });
 
@@ -94,14 +101,44 @@ describe('Bloglist app', function () {
         });
       });
 
-      it('a specific blog can be liked', function () {
+      it.skip('a specific blog can be liked', function () {
         // By its title
         cy.contains('Second blog')
           .contains('view')
           .click()
           .parent()
+          .find('button')
           .contains('like')
           .click();
+
+        // From 0 to 1 like
+        cy.contains('Second blog').should('contain', 1);
+      });
+
+      it.skip('a specific blog can be deleted by the owner', function () {
+        // By its title
+        cy.contains('Second blog')
+          .contains('view')
+          .click()
+          .parent()
+          .find('button')
+          .contains('remove')
+          .click();
+
+        cy.get('html').should('not.contain', 'Second blog');
+      });
+
+      it("a specific blog can not be deleted by a user who didn't create it", function () {
+        // testname user logs out
+        cy.contains('logout').click();
+        cy.login({ username: 'noCreator', password: 'passw' });
+
+        cy.contains('Second blog')
+          .contains('view')
+          .click()
+          .parent()
+          .find('button')
+          .should('not.contain', 'remove');
       });
     });
   });
