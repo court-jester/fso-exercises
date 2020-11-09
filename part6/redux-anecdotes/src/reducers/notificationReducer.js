@@ -1,7 +1,7 @@
 const notificationReducer = (state = "", action) => {
   switch (action.type) {
     case "SET_NOTIFICATION":
-      return action.data.message;
+      return action.message;
 
     case "UNSET_NOTIFICATION":
       return "";
@@ -14,9 +14,7 @@ const notificationReducer = (state = "", action) => {
 export const setNotification = (message) => {
   return {
     type: "SET_NOTIFICATION",
-    data: {
-      message,
-    },
+    message,
   };
 };
 
